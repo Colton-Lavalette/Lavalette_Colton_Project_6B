@@ -1,68 +1,60 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 export type WeatherDataProps = {
     city: string;
     state: string;
-    shortForecast: string;
-    temperature: number;
-    tempUnit: string;
-    windSpeed: string;
-    windDirection: string;
-    periodName: string;
-    rainChance: string;
-    detailedForecast: string;
+    forecast: {
+        shortForecast: string;
+        temperature: number;
+        temperatureUnit: string;
+        windSpeed: string;
+        windDirection: string;
+        name: string;
+        probabilityOfPrecipitation: { value: number | null };
+        detailedForecast: string;
+    };
     containerWidth: number;
-    containerHeight: number;
 };
 
 export default function WeatherCard({
-    city,
-    state,
-    shortForecast,
-    temperature,
-    tempUnit,
-    windSpeed,
-    windDirection,
-    periodName,
-    rainChance,
-    detailedForecast,
-    containerWidth,
-    containerHeight
-    }: WeatherDataProps)
+                                        city,
+                                        state,
+                                        forecast,
+                                        containerWidth,
+                                    }: WeatherDataProps) {
+    const {
+        shortForecast,
+        temperature,
+        temperatureUnit,
+        windSpeed,
+        windDirection,
+        name: periodName,
+        probabilityOfPrecipitation,
+        detailedForecast,
+    } = forecast;
 
-{
+    const rainChance = probabilityOfPrecipitation?.value ?? 0;
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={[styles.textContainer, { width: containerWidth, height: containerHeight }]}>
-                <View style={styles.headerSection}>
-                    <Text style={styles.cityTitle}>{city}, {state}</Text>
-                    <Text style={styles.weatherTitle}>{periodName}: {shortForecast}</Text>
-                </View>
-                <View style={styles.forecastBlock}>
-                    <Text style={styles.text}>Temperature: {temperature} &#176;{tempUnit}</Text>
-                    <Text style={styles.text}>Wind speed: {windSpeed} {windDirection}</Text>
-                    <Text style={styles.text}>Chance of precipitation: {rainChance}</Text>
-                    <Text style={styles.text}>Forecast: {detailedForecast}</Text>
-                </View>
+        <View style={[styles.textContainer, { width: containerWidth }]}>
+            <View style={styles.headerSection}>
+                <Text style={styles.cityTitle}>{city}, {state}</Text>
+                <Text style={styles.weatherTitle}>{periodName}: {shortForecast}</Text>
             </View>
-        </ScrollView>
+            <View style={styles.forecastBlock}>
+                <Text style={styles.text}>Temperature: {temperature} &#176;{temperatureUnit}</Text>
+                <Text style={styles.text}>Wind speed: {windSpeed} {windDirection}</Text>
+                <Text style={styles.text}>Chance of precipitation: {rainChance}%</Text>
+                <Text> </Text>
+                <Text> </Text>
+                <Text style={styles.text}>Forecast: {detailedForecast}</Text>
+            </View>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    scrollContainer: {
-        flexGrow: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     textContainer: {
         width: '100%',
         padding: 20,
@@ -75,6 +67,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 5,
         minHeight: 300,
+        overflow: 'hidden',
+        marginBottom: 20,
     },
     headerSection: {
         alignItems: 'center',

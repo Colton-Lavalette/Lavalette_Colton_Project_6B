@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { usePoints } from '@/hooks/usePoints';
 import { useForecast } from '@/hooks/useForecast';
-import WeatherCard from '@/components/WeatherCard'; // Import the WeatherCard component
+import WeatherCard from '@/components/WeatherCard';
 
 export default function HomeScreen() {
     const { location, error: geolocationError } = useGeolocation();
@@ -20,39 +20,23 @@ export default function HomeScreen() {
     );
 
     const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
-    const [windowHeight, setWindowHeight] = useState(Dimensions.get('window').height);
 
     useEffect(() => {
         const subscription = Dimensions.addEventListener('change', () => {
             setWindowWidth(Dimensions.get('window').width);
-            setWindowHeight(Dimensions.get('window').height);
         });
 
         return () => {
-            subscription.remove(); // Correct way to clean up
+            subscription.remove();
         };
     }, []);
 
-    if (geolocationError) {
+    if (geolocationError || pointsError || forecastError) {
         return (
             <View style={styles.container}>
-                <Text style={styles.errorText}>{geolocationError}</Text>
-            </View>
-        );
-    }
-
-    if (pointsError) {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.errorText}>{pointsError}</Text>
-            </View>
-        );
-    }
-
-    if (forecastError) {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.errorText}>{forecastError}</Text>
+                <Text style={styles.errorText}>
+                    {geolocationError || pointsError || forecastError}
+                </Text>
             </View>
         );
     }
@@ -73,36 +57,20 @@ export default function HomeScreen() {
         );
     }
 
-    const {
-        temperature,
-        tempUnit,
-        windSpeed,
-        windDirection,
-        periodName,
-        rainChance,
-        shortForecast,
-        detailedForecast
-    } = forecastData || {};
-
     const containerWidth = windowWidth > 600 ? windowWidth * 0.5 : windowWidth * 0.9;
-    const containerHeight = windowWidth > 600 ? windowHeight * 0.45 : windowHeight * 0.5;
+    const paddingTop = windowWidth < 600 ? 75 : 20;
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <WeatherCard
-                city={pointsData.city}
-                state={pointsData.state}
-                shortForecast={shortForecast}
-                temperature={temperature}
-                tempUnit={tempUnit}
-                windSpeed={windSpeed}
-                windDirection={windDirection}
-                rainChance={rainChance}
-                detailedForecast={detailedForecast}
-                periodName={periodName}
-                containerWidth={containerWidth}
-                containerHeight={containerHeight}
-            />
+        <ScrollView contentContainerStyle={[styles.scrollContainer, { paddingTop }]}>
+            {forecastData.map((forecast: any, index: number) => (
+                <WeatherCard
+                    key={index}
+                    city={pointsData.city}
+                    state={pointsData.state}
+                    forecast={forecast}
+                    containerWidth={containerWidth}
+                />
+            ))}
         </ScrollView>
     );
 }
@@ -116,8 +84,8 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         flexGrow: 1,
-        justifyContent: 'center',
         alignItems: 'center',
+        paddingVertical: 10,
     },
     errorText: {
         color: 'red',

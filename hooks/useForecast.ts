@@ -13,20 +13,13 @@ export const useForecast = (office?: string, gridX?: number, gridY?: number) => 
             setError(null);
             try {
                 const response = await fetch(`https://api.weather.gov/gridpoints/${office}/${gridX},${gridY}/forecast`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch forecast data');
-                }
+                if (!response.ok) throw new Error('Failed to fetch forecast data');
+
                 const json = await response.json();
-                setData({
-                    temperature: json.properties.periods[0].temperature,
-                    tempUnit: json.properties.periods[0].temperatureUnit,
-                    windSpeed: json.properties.periods[0].windSpeed,
-                    windDirection: json.properties.periods[0].windDirection,
-                    periodName: json.properties.periods[0].name,
-                    rainChance: json.properties.periods[0].probabilityOfPrecipitation.value,
-                    shortForecast: json.properties.periods[0].shortForecast,
-                    detailedForecast: json.properties.periods[0].detailedForecast,
-                });
+                const periods = json.properties.periods;
+                const sliceEnd = periods[0].name === 'Tonight' ? 3 : 4;
+                const forecastSlice = periods.slice(0, sliceEnd);
+                setData(forecastSlice);
             } catch (err) {
                 setError((err as Error).message);
             } finally {
@@ -36,6 +29,7 @@ export const useForecast = (office?: string, gridX?: number, gridY?: number) => 
 
         fetchData();
     }, [office, gridX, gridY]);
+
 
     return { data, loading, error };
 };
