@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { usePoints } from '@/hooks/usePoints';
@@ -18,6 +18,20 @@ export default function HomeScreen() {
         pointsData?.gridX,
         pointsData?.gridY
     );
+
+    const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
+    const [windowHeight, setWindowHeight] = useState(Dimensions.get('window').height);
+
+    useEffect(() => {
+        const subscription = Dimensions.addEventListener('change', () => {
+            setWindowWidth(Dimensions.get('window').width);
+            setWindowHeight(Dimensions.get('window').height);
+        });
+
+        return () => {
+            subscription.remove(); // Correct way to clean up
+        };
+    }, []);
 
     if (geolocationError) {
         return (
@@ -70,6 +84,9 @@ export default function HomeScreen() {
         detailedForecast
     } = forecastData || {};
 
+    const containerWidth = windowWidth > 600 ? windowWidth * 0.5 : windowWidth * 0.9;
+    const containerHeight = windowWidth > 600 ? windowHeight * 0.45 : windowHeight * 0.5;
+
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <WeatherCard
@@ -83,6 +100,8 @@ export default function HomeScreen() {
                 rainChance={rainChance}
                 detailedForecast={detailedForecast}
                 periodName={periodName}
+                containerWidth={containerWidth}
+                containerHeight={containerHeight}
             />
         </ScrollView>
     );

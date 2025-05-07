@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView, Dimensions} from 'react-native';
+import {View, Text, StyleSheet, ScrollView} from 'react-native';
 
 export type WeatherDataProps = {
     city: string;
@@ -12,6 +12,8 @@ export type WeatherDataProps = {
     periodName: string;
     rainChance: string;
     detailedForecast: string;
+    containerWidth: number;
+    containerHeight: number;
 };
 
 export default function WeatherCard({
@@ -25,12 +27,11 @@ export default function WeatherCard({
     periodName,
     rainChance,
     detailedForecast,
+    containerWidth,
+    containerHeight
     }: WeatherDataProps)
 
 {
-    const screenWidth = Dimensions.get('window').width;
-    const containerWidth = screenWidth > 600 ? '50%' : '90%';
-    const containerHeight = screenWidth > 600 ? '45%' : '50%';
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -73,6 +74,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
         shadowRadius: 5,
+        minHeight: 300,
     },
     headerSection: {
         alignItems: 'center',
