@@ -1,29 +1,36 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
+import HomeScreen from './screens/HomeScreen';
+import SearchScreen from './screens/SearchScreen';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const Tab = createBottomTabNavigator();
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
-
+export default function Layout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+      <Tab.Navigator
+          screenOptions={{
+            headerShown: false,
+            tabBarActiveTintColor: '#1639dd',
+            tabBarInactiveTintColor: 'gray',
+          }}>
+        <Tab.Screen
+            name="Current Location"
+            component={HomeScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="home" color={color} size={size} />
+              ),
+            }}
+        />
+        <Tab.Screen
+            name="Other Cities"
+            component={SearchScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="search" color={color} size={size} />
+              ),
+            }}
+        />
+      </Tab.Navigator>
   );
 }
