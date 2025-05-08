@@ -17,7 +17,7 @@ export const useForecast = (office?: string, gridX?: number, gridY?: number) => 
 
                 const json = await response.json();
                 const periods = json.properties.periods;
-                const sliceEnd = periods[0].name === 'Tonight' ? 3 : 4;
+                const sliceEnd = (periods[0].name === 'Tonight' || periods[0].name === 'Overnight') ? 3 : 4;
                 const forecastSlice = periods.slice(0, sliceEnd);
                 setData(forecastSlice);
             } catch (err) {
